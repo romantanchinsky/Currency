@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:15
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      retries: 5
+      timeout: 10s
+    environment:
+      POSTGRES_DB: currency_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+  
+  migration:
+    build:
+      context: .
+      dockerfile: services/migration/Migration.Service/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__Default=${CONNECTION_STRING}
+
+  user.api:
+    build:
+      context: .
+      dockerfile: services/user/User.Api/Dockerfile
+    ports:
+    - "5001:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+    environment:
+      - ConnectionStrings__Default=${CONNECTION_STRING}
+
+  finance.api:
+    build:
+      context: .
+      dockerfile: services/finance/Finance.Api/Dockerfile
+    ports:
+    - "5002:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+    environment:
+      - ConnectionStrings__Default=${CONNECTION_STRING}
+  
+  currency-worker:
+    build:
+      context: .
+      dockerfile: services/currency-worker/Currency.Worker/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+  
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Gateway.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user.api
+      - finance.api
+

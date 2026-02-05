@@ -1,0 +1,4 @@
+### 
+GET http://localhost:8080/api/currencies
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJ1bmlxdWVfbmFtZSI6InVzZXIyIiwiZXhwIjoxNzcwMDcyMDQyLCJpc3MiOiJVc2VyU2VydmljZSIsImF1ZCI6IkFwaUdhdGV3YXkifQ.oAMdUokLlWp7cLMoq0l9uRcE3L_mnkPTSJ55X5TU6EA
+Accept: application/json
